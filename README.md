@@ -1,2 +1,3 @@
-# pobs
-Coding challenges/projects/tests for potential jobs.
+# Pobs
+
+Coding **p**rojects for j**obs**.
