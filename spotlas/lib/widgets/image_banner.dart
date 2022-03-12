@@ -15,6 +15,7 @@ import 'package:spotlas/consts.dart' as consts;
 ///       text
 /// ```
 class ImageBanner extends StatelessWidget {
+  final Color leftImageBorderColor;
   final String leftImageUrl;
   final String topText;
   final String bottomText;
@@ -22,6 +23,7 @@ class ImageBanner extends StatelessWidget {
 
   const ImageBanner({
     Key? key,
+    required this.leftImageBorderColor,
     required this.leftImageUrl,
     required this.topText,
     required this.bottomText,
@@ -34,14 +36,23 @@ class ImageBanner extends StatelessWidget {
       children: [
         Expanded(
           flex: 2,
-          // Probably can change this to FittedBox?
-          child: FractionallySizedBox(
-            widthFactor: 1.0,
-            heightFactor: 1.0,
-            child: CachedNetworkImage(
-              imageUrl: leftImageUrl,
-              placeholder: consts.cacheNetImgPlaceHolderBuilder,
-              errorWidget: consts.cacheNetImgErrorWidgetBuilder,
+          child: Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: FittedBox(
+              fit: BoxFit.cover,
+              child: CircleAvatar(
+                backgroundColor: leftImageBorderColor,
+                child: Padding(
+                  padding: const EdgeInsets.all(2.5),
+                  child: ClipOval(
+                    child: CachedNetworkImage(
+                      imageUrl: leftImageUrl,
+                      placeholder: consts.cacheNetImgPlaceHolderBuilder,
+                      errorWidget: consts.cacheNetImgErrorWidgetBuilder,
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
         ),

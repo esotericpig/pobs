@@ -129,6 +129,7 @@ class _FeedItemState extends State<FeedItem> {
           Expanded(
             flex: 1,
             child: ImageBanner(
+              leftImageBorderColor: consts.mainColor,
               leftImageUrl: widget.model.authorPhotoUrl,
               topText: widget.model.authorUsername,
               bottomText: widget.model.authorFullName,
@@ -153,6 +154,7 @@ class _FeedItemState extends State<FeedItem> {
           Expanded(
             flex: 1,
             child: ImageBanner(
+              leftImageBorderColor: Colors.white,
               leftImageUrl: widget.model.placeLogoUrl,
               topText: widget.model.placeName,
               bottomText: widget.model.placeLocationFullName,
