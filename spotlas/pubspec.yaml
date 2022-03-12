@@ -1,0 +1,33 @@
+name: spotlas
+version: 1.0.0+1
+description: Spotlas feed reel.
+
+publish_to: 'none'
+
+environment:
+  sdk: ">=2.15.1 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.2
+
+  cached_network_image: ^3.2.0
+  card_swiper: ^2.0.1
+  flutter_svg: ^1.0.3
+  like_button: ^2.0.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # See: `analysis_options.yaml`.
+  flutter_lints: ^1.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/
+    - assets/images/
