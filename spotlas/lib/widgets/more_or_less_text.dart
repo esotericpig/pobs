@@ -56,7 +56,7 @@ class _MoreOrLessTextState extends State<MoreOrLessText> {
             maxWidth: constraints.maxWidth,
           );
 
-        // Keeping this for the future in case need it to make this work better.
+        // // Keeping this for the future in case need it to make this work better.
         // var rp = RenderParagraph(
         //   textSpan,
         //   textAlign: TextAlign.left,

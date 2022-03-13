@@ -4,7 +4,26 @@
 
 import 'dart:convert' as convert;
 
+import 'package:flutter/foundation.dart' as foundation;
 import 'package:http/http.dart' as http;
+
+/// Throws [BadStatusException] if HTTP status code doesn't equal 200.
+Future<List<FeedItemModel>> loadFeedItems(int pageNum) async {
+  var uri = Uri.parse('${FeedItemModel.endpointUrl}$pageNum');
+  var response = await http.get(uri);
+
+  if (response.statusCode != 200) {
+    throw BadStatusException(response.statusCode, response.body);
+  }
+
+  var body = response.body;
+  if (body.isEmpty) return [];
+
+  var json = convert.jsonDecode(body) as List?;
+  if (json == null) return [];
+
+  return json.map((j) => FeedItemModel(pageNum, j)).toList();
+}
 
 class FeedItemModel {
   // URL w/o page number filled in.
@@ -41,21 +60,70 @@ class FeedItemModel {
   late final String createdAtStr;
 
   /// Throws [BadStatusException] if HTTP status code doesn't equal 200.
-  static Future<List<FeedItemModel>> loadFeedItems(int pageNum) async {
-    var uri = Uri.parse('$endpointUrl$pageNum');
-    var response = await http.get(uri);
+  static Future<List<FeedItemModel>> loadFeedItemsInIsolate(int pageNum) async {
+    Map<String, dynamic> result = await foundation.compute(
+      (int pn) async {
+        List<FeedItemModel> feedItems;
+        Exception? error;
 
-    if (response.statusCode != 200) {
-      throw BadStatusException(response.statusCode, response.body);
-    }
+        try {
+          feedItems = await loadFeedItems(pn);
+        } on Exception catch (e) {
+          feedItems = [];
+          error = e;
+        }
 
-    var body = response.body;
-    if (body.isEmpty) return [];
+        return <String, dynamic>{
+          'feedItems': feedItems,
+          'error': error,
+        };
+      },
+      pageNum,
+    );
 
-    var json = convert.jsonDecode(body) as List?;
-    if (json == null) return [];
+    Exception? error = result['error'];
+    if (error != null) throw error;
 
-    return json.map((j) => FeedItemModel(pageNum, j)).toList();
+    return result['feedItems'];
+
+    // // Tried to do it manually in order to handle errors better,
+    // //   but couldn't figure out a better way than a map.
+    // // Keeping it here for knowledge base.
+    // final rPort = ReceivePort();
+    //
+    // try {
+    //   await Isolate.spawn(
+    //     (Map<String, dynamic> data) async {
+    //       List<FeedItemModel> feedItems;
+    //       Exception? error;
+    //
+    //       try {
+    //         feedItems = await loadFeedItems(data['pageNum']);
+    //       } on Exception catch (e) {
+    //         feedItems = [];
+    //         error = e;
+    //       }
+    //
+    //       Isolate.exit(data['sPort'], <String, dynamic>{
+    //         'feedItems': feedItems,
+    //         'error': error,
+    //       });
+    //     },
+    //     {
+    //       'sPort': rPort.sendPort,
+    //       'pageNum': pageNum,
+    //     },
+    //   );
+    //
+    //   Map<String, dynamic> result = await rPort.first;
+    //   Exception? error = result['error'];
+    //
+    //   if (error != null) throw error;
+    //
+    //   return result['feedItems'];
+    // } finally {
+    //   rPort.close();
+    // }
   }
 
   FeedItemModel(this.pageNum, Map<String, dynamic> json) {

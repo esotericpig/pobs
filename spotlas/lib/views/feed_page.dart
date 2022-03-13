@@ -32,7 +32,7 @@ class _FeedPageState extends State<FeedPage> {
     if (models.isNotEmpty && models.last.pageNum >= nextPageNum) return;
 
     try {
-      var nextModels = await FeedItemModel.loadFeedItems(nextPageNum);
+      var nextModels = await FeedItemModel.loadFeedItemsInIsolate(nextPageNum);
 
       if (nextModels.isEmpty) {
         nextPageNum = 0; // No more pages, so stop hitting server.
